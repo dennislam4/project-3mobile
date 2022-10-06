@@ -7,6 +7,7 @@
 
 class LibraryItem:
     """Class that represents items found within the library"""
+
     def __init__(self, library_item_id, title):
         """Initilizes LibraryItem class"""
         self._library_item_id = library_item_id
@@ -58,6 +59,7 @@ class LibraryItem:
 
 class Book(LibraryItem):
     """Represents a book that is inherited from LibraryItem"""
+
     def __init__(self, library_item_id, title, author):
         """Initilizes Book class"""
         super().__init__(library_item_id, title)
@@ -81,6 +83,7 @@ class Book(LibraryItem):
 
 class Album(LibraryItem):
     """Represents an album that is inherited from LibraryItem"""
+
     def __init__(self, library_item_id, title, artist):
         """Initilizes Album class"""
         super().__init__(library_item_id, title)
@@ -104,6 +107,7 @@ class Album(LibraryItem):
 
 class Movie(LibraryItem):
     """Represents a movie that is inherited from LibraryItem"""
+
     def __init__(self, library_item_id, title, director):
         """Initilizes Movie class"""
         super().__init__(library_item_id, title)
@@ -123,6 +127,7 @@ class Movie(LibraryItem):
 
 class Patron:
     """Class that represents a Patron and their fees and checkouts of library items"""
+
     def __init__(self, name, patron_id):
         """Initializes Patron class"""
         self._name = name
@@ -166,6 +171,7 @@ class Patron:
 
 class Library:
     """Class that represents the Library """
+
     def __init__(self):
         """Initializes current date as well as holdings and member collections as empty lists"""
         self._holdings = []
@@ -204,8 +210,31 @@ class Library:
 
     def lookup_patron_from_id(self, patron_id):
         """Returns the patron id based on the id parameter"""
-        for ids in self._members():
+        for ids in self._members:
             if ids.get_patron_id() == patron_id:
                 return ids
         else:
             return None
+
+    def check_out_library_item(self, patron_id, library_item_id):
+        """
+        Checks for Patron's ID to see if they are in the members collection, returns patron not found if they are not
+        within the members holdings. Then, checks for library item ID and either returns the item is not found, item is
+        already checked out, or item is on hold from another patron depending on item status.
+        """
+        for customer in self._members:
+            if self._lookup_patron_from_id(customer) == patron_id:
+                for library_items in self._holdings:
+                    if self._lookup_library_item_from_id(library_item_id) == library_item_id:
+                        if library_items.get_location() == "ON_SHELF":
+                            library_items.set_location() == "CHECKED_OUT"
+                            library_items.set_checked_out_by(customer)
+                            library_items.set_date_checked_out(self._current_date)
+                            customer.add_library_item(library_items)
+                            return "check out successful"
+                        elif library_items.get_location() == "ON_HOLD_SHELF":
+                            return "item on hold by other patron"
+                        else:
+                            return "item already checked out"
+                return "item not found"
+            return "patron not found"
